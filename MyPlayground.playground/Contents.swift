@@ -394,4 +394,32 @@ screen.printCart(cart: cart, currency: .eur)
 // Кінець коду сценарію для Пункт 3
 
 
+
+class Screen {
+    func printCart(cart: Cart, currency: Currency) {
+       
+        let usdRate = 36.57
+        let eurRate = 40.32
+        
+        print("------------------------ Обрана валюта: \(currency.rawValue) ---------------------------")
+        
+        cart.products.forEach { product in
+            var convertedPrice = product.price
+            switch currency {
+            case .usd:
+                convertedPrice /= usdRate
+            case .eur:
+                convertedPrice /= eurRate
+            case .uah:
+                break // Ціна вже в UAH, конвертація не потрібна
+            }
+            
+            print("Назва продукту: \(product.name), Ціна: \(String(format: "%.2f", convertedPrice)) \(currency.rawValue)")
+        }
+        
+        print("---------------------------------------------------------------------")
+    }
+}
+
+
 // КІНЕЦЬ СЕКЦІЇ 2
