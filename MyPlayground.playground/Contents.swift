@@ -200,6 +200,22 @@ screen.printCheck(cart: cart)
 
 */
 
+
+print("SCENARIO 1:\n")
+
+let responseFromServer = ResponseFromServer()
+let receivedProducts = responseFromServer.sourceProducts
+let dataMapper = DataMapper()
+
+let cart = Cart()
+cart.products = dataMapper.products(from: receivedProducts)
+cart.discount = .vip 
+
+// Змінено з .none на .vip
+
+let screen = Screen()
+screen.printCheck(cart: cart)
+
 // Кінець коду сценарію для Пункт 1
 
 
@@ -245,6 +261,7 @@ screen.printCheck(cart: cart)
 
 // Початок коду сценарію для Пункт 2
 
+
 /*
  
 print("\nSCENARIO 2:\n")
@@ -258,6 +275,66 @@ cart.clear()
 screen.printCheck(cart: cart)
 
  */
+
+
+print("\nSCENARIO 2:\n")
+
+cart.products = dataMapper.products(from: responseFromServer.get3Products())
+cart.clear()
+
+screen.printCheck(cart: cart)
+
+
+class Cart {
+    var products: [Product] = []
+    var discount: Discount = .none
+
+    func removeSelectedProduct(at index: Int) {
+        if index >= 0 && index < products.count {
+            products.remove(at: index)
+        }
+    }
+
+    func clear() {
+        products.removeAll()
+    }
+
+    func totalPrice() -> Double {
+        let price = products.reduce(0) { $0 + $1.price }
+        return price - (price * Double(discountPercentValue()) / 100.0)
+    }
+
+    func discountPercentValue() -> Int {
+        switch discount {
+        case .regular: return 5
+        case .vip: return 15
+        case .none: return 0
+        }
+    }
+}
+
+
+class Screen {
+    func printCheck(cart: Cart) {
+        if cart.products.isEmpty {
+            print("Кошик пустий. Для оформлення замовлення додайте хоча б один товар")
+            return
+        }
+
+        var resultStringToPrint = "--------------- ФІСКАЛЬНИЙ ЧЕК ----------------\n"
+
+        for (index, product) in cart.products.enumerated() {
+            resultStringToPrint += "\(index + 1). \(product.textDescription())\n"
+        }
+
+        let totalPrice = String(format: "%.2f", cart.totalPrice())
+        resultStringToPrint += "-----------------------------------------------\n"
+        resultStringToPrint += "Загальна ціна: \(totalPrice) \(cart.products.first?.currency.rawValue ?? "")\n"
+        resultStringToPrint += "-----------------------------------------------"
+
+        print(resultStringToPrint)
+    }
+}
 
 // Кінець коду сценарію для Пункт 2
 
